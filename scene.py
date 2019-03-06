@@ -1,13 +1,13 @@
 import numpy as np
 
 class Sphere:
-    def __init__(self,center,rayon,material):                                       #constructeur de la classe Sphere
+    def __init__(self,center,rayon,material):
         self.center = center
         self.rayon = rayon
         self.material = material
 
 class Material:
-    def __init__(self,color,ambiant,diffuse,specular,shininess,reflection):         #constructeur de la classe Material
+    def __init__(self,color,ambiant,diffuse,specular,shininess,reflection):
         self.color = color
         self.ambiant = ambiant
         self.diffuse = diffuse
