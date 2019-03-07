@@ -2,7 +2,7 @@ import numpy as np
 from numpy import linalg as la
 
 class Spotlight :
-    def __init__(self,position,color):                     #constructeur de la classe Spotlight
+    def __init__(self,position,color):
         self.position = position
         self.color = color
         
@@ -23,6 +23,6 @@ def phong_illuminate(light, position, normal, object, viewer):
         I = kd*L.dot(N) + ks*(R.dot(V))**shi        #calcul de l'intensité à partir du modèle de Phong
         return I*object.material.color*light.color
     
-def ambiant_illuminate(object, light):
-    return object.material.ambiant*object.material.color*light.color
+def ambiant_illuminate(object):
+    return object.material.ambiant*object.material.color
     
