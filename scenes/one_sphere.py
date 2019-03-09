@@ -11,15 +11,21 @@ import matplotlib.pyplot as plt
 
 
 this_scene = Scene()
-blue_material = Material(np.array([0,0,1]),0.4,0.5,0.7,1.,1.)
+some_material = Material(np.array([0.,0.,1.]),0.3,0.5,0.7,0.5,1.)
 
 
-white_light = Spotlight(np.array([1,1,2]),np.array([1,1,1]))
-blue_sphere = Sphere(np.array([0,0,3]), 1, blue_material)
+white_light = Spotlight(np.array([1.,1.,2.]),np.array([1.,1.,1.]))
+#red_light = Spotlight(np.array([-1,2,1]),np.array([1,1,0]))
+#other_light = Spotlight(np.array([0,-1,1.5]),np.array([1,0,1]))
+some_sphere = Sphere(np.array([0,0,3]), 1, some_material)
 
-this_scene.add_object(blue_sphere)
+
+
+this_scene.add_object(some_sphere)
 this_scene.add_light(white_light)
+#this_scene.add_light(red_light)
+#this_scene.add_light(other_light)
 
 this_camera = Camera(1000,1000,1)
 
-plt.imsave('blue sphere.png', raytracer_render(this_camera, this_scene))
+plt.imsave('some sphere.png', raytracer_render(this_camera, this_scene))

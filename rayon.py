@@ -28,7 +28,7 @@ def trace_ray(ray, scene):
 
     result_color = ambiant_illuminate(closest_instersection.obj) if len(scene.lights) > 0 else np.array([0,0,0])
     for light in scene.lights:
-        result_color += phong_illuminate(light, closest_instersection.position, closest_instersection.normal, closest_instersection.obj, ray.starting_point)
+        result_color += compute_light(light, scene, closest_instersection, ray.starting_point)
     result_color = np.array([min(rgb,1) for rgb in list(result_color)])
     return result_color
 
@@ -38,3 +38,14 @@ def raytracer_render(camera, scene):
         for col in range(camera.image_ncols):
             image[row,col,:] = trace_ray(camera.ray_at(row,col), scene)
     return image
+
+def compute_light(light, scene, intersection, viewer):
+    to_light = light.position - intersection.position
+    occlusion = None
+    for obj in scene.objects:
+        occlusion = intersect(obj, Ray(intersection.position, to_light))
+        if occlusion != None:
+            dist_to_occl = la.norm(occlusion.position - intersection.position)
+            if 0 < dist_to_occl and dist_to_occl < la.norm(to_light) and to_light.dot(occlusion.position - intersection.position) > 0 :
+                return np.array([0,0,0])
+    return phong_illuminate(light, intersection.position, intersection.normal, intersection.obj, viewer)

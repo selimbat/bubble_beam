@@ -14,7 +14,7 @@ def phong_illuminate(light, position, normal, object, viewer):
     R = (1/la.norm(R))*R
     V = viewer - position               #surface to viewer vector
     V = (1/la.norm(V))*V
-    if L.dot(N) <= 0 or V.dot(N) <= 0:       #si la lumière ou l'observateur est derrière la surface en question
+    if L.dot(N) <= 0 and V.dot(N) <= 0:       #si la lumière ou l'observateur est derrière la surface en question
         return np.array([0,0,0])             #couleur noire
     else :
         ks = object.material.specular
