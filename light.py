@@ -14,14 +14,16 @@ def phong_illuminate(light, position, normal, object, viewer):
     R = (1/la.norm(R))*R
     V = viewer - position               #surface to viewer vector
     V = (1/la.norm(V))*V
-    if L.dot(N) <= 0 and V.dot(N) <= 0:       #si la lumière ou l'observateur est derrière la surface en question
-        return np.array([0,0,0])             #couleur noire
-    else :
+    if L.dot(N) > 0 and V.dot(N) > 0 :
         ks = object.material.specular
         kd = object.material.diffuse
         shi = object.material.shininess
-        I = kd*L.dot(N) + ks*(R.dot(V))**shi        #calcul de l'intensité à partir du modèle de Phong
+        I = kd*L.dot(N)                 #calcul de l'intensité à partir du modèle de Phong, ajout de la composante diffuse
+        if R.dot(V) > 0:
+            I += ks*(R.dot(V))**shi     #ajout de la composante specular
         return I*object.material.color*light.color
+    else:                                       #si la lumière ou l'observateur est derrière la surface en question
+        return np.array([0.,0.,0.])                #couleur noire
     
 def ambiant_illuminate(object):
     return object.material.ambiant*object.material.color

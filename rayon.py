@@ -10,12 +10,18 @@ class Ray :
         self.direction = direction
 
 
-def trace_ray(ray, scene):
+def trace_ray(ray, scene, on_reflection_object=None, n_reflections=0):
+    n_reflections += 1
+    if n_reflections == 6:
+        return np.array([0.,0.,0.])
     intersections = []
-    for obj in scene.objects:
+    #Find the object to print on the image
+    other_objects = [o for o in scene.objects if o != on_reflection_object]
+    for obj in other_objects:
         intersection = intersect(obj,ray)
         if intersection != None:
-            intersections.append(intersect(obj,ray))
+            intersections.append(intersection)
+
     if len(intersections) > 0:
         min_dist = inf
         for inter in intersections:
@@ -23,23 +29,21 @@ def trace_ray(ray, scene):
             if dist_from_inter < min_dist:
                 closest_instersection = inter
                 min_dist = dist_from_inter
+
+        result_color = ambiant_illuminate(closest_instersection.obj) if len(scene.lights) > 0 else np.array([0.,0.,0.])
+        for light in scene.lights:
+            result_color += compute_light(light, scene, closest_instersection, ray.starting_point)
+        
+        R = ray.direction
+        N = closest_instersection.normal
+        reflection_ray = Ray(closest_instersection.position, R - 2*R.dot(N)*N)
+        reflection_factor = closest_instersection.obj.material.reflection
+        result_color = result_color*(1 - reflection_factor) + reflection_factor*trace_ray(reflection_ray, scene, on_reflection_object=closest_instersection.obj, n_reflections=n_reflections)
+        return result_color
     else:
-        return np.array([0,0,0])
+        return np.array([0.,0.,0.])
 
-    result_color = ambiant_illuminate(closest_instersection.obj) if len(scene.lights) > 0 else np.array([0,0,0])
-    for light in scene.lights:
-        #result_color += phong_illuminate(light, closest_instersection.position, closest_instersection.normal, closest_instersection.obj, ray.starting_point)
-        result_color += compute_light(light, scene, closest_instersection, ray.starting_point)
-    #result_color = np.array([min(rgb,1) for rgb in list(result_color)])
-    return result_color
 
-def raytracer_render(camera, scene):
-    image = np.zeros((camera.image_nrows,camera.image_ncols,3))
-    for row in range(camera.image_nrows):
-        for col in range(camera.image_ncols):
-            image[row,col,:] = trace_ray(camera.ray_at(row,col), scene)
-    image = image / np.amax(image)
-    return image
 
 def compute_light(light, scene, intersection, viewer):
     to_light = light.position - intersection.position
@@ -50,5 +54,14 @@ def compute_light(light, scene, intersection, viewer):
         if occlusion != None:
             dist_to_occl = la.norm(occlusion.position - intersection.position)
             if dist_to_occl < la.norm(to_light) and to_light.dot(occlusion.position - intersection.position) > 0 :
-                return np.array([0,0,0])
+                return np.array([0.,0.,0.])
     return phong_illuminate(light, intersection.position, intersection.normal, intersection.obj, viewer)
+
+
+def raytracer_render(camera, scene):
+    image = np.zeros((camera.image_nrows,camera.image_ncols,3))
+    for row in range(camera.image_nrows):
+        for col in range(camera.image_ncols):
+            image[row,col,:] = trace_ray(camera.ray_at(row,col), scene)
+    image = image / np.amax(image)
+    return image

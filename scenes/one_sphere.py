@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 this_scene = Scene()
-some_material = Material(np.array([0.,0.,1.]),1.,1.,1.,1.,1.)
+some_material = Material(np.array([0.,0.,1.]),0.5,0.7,0.1,0.3,0.4)
 red_material = Material(np.array([1.,0.,0.]),1.,1.,1.,1.,1.)
 
 white_light = Spotlight(np.array([1.,1.,0.]),np.array([1.,1.,1.]))
@@ -25,6 +25,6 @@ this_scene.add_light(white_light)
 #this_scene.add_light(red_light)
 #this_scene.add_light(other_light)
 
-this_camera = Camera(1000,1000,1)
+this_camera = Camera(1500,1500,2.2)
 
-plt.imsave('first shadow.png', raytracer_render(this_camera, this_scene))
+plt.imsave('first reflection.png', raytracer_render(this_camera, this_scene))
