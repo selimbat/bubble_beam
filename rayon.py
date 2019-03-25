@@ -2,7 +2,7 @@ from intersection import intersect
 import numpy as np
 from numpy import linalg as la
 from light import phong_illuminate, ambiant_illuminate
-from math import inf
+from math import inf,log
 
 class Ray :
     def __init__(self, starting_point, direction):
@@ -63,5 +63,7 @@ def raytracer_render(camera, scene):
     for row in range(camera.image_nrows):
         for col in range(camera.image_ncols):
             image[row,col,:] = trace_ray(camera.ray_at(row,col), scene)
-    image = image / np.amax(image)
-    return image
+    log_normalizer = np.vectorize(lambda x: log(1+x))
+    image_log = log_normalizer(image)
+    image_log = image_log / np.amax(image_log)
+    return image_log
